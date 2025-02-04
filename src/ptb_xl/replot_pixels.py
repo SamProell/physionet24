@@ -62,7 +62,7 @@ def resample_pixels_in_dir(dir, resample_factor):
                             )
 
                     with open(file_path, "w") as file:
-                        json.dump(data, file, indent=4)
+                        json.dump(data, file, indent=None, separators=(',', ':'))
                 except Exception as e:
                     error_list.append((e, file_path))
     print("Errors:")

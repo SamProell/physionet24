@@ -290,7 +290,7 @@ def get_paper_ecg(input_file,header_file,output_directory, seed, add_dc_pulse,ad
 
         outfile = os.path.join(output_directory,rec_tail+'.png')
 
-        json_object = json.dumps(json_dict, indent=4)
+        json_object = json.dumps(json_dict, indent=None, separators=(',', ':'))
 
         # Writing to sample.json
         if store_configs:

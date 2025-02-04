@@ -235,7 +235,7 @@ def run_single_file(args):
                 json_dict['noise'] = noise
 
             if args.store_config:
-                json_object = json.dumps(json_dict, indent=4)
+                json_object = json.dumps(json_dict, indent=None, separators=(',', ':'))
                 
                 with open(rec_tail + '.json', "w") as f:
                     f.write(json_object)
