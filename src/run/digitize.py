@@ -56,7 +56,6 @@ def get_parser():
         help="Folder to save the digitized images.",
     )
     parser.add_argument(
-        "-f",
         "--fold",
         type=str,
         default="all",
