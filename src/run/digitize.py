@@ -55,6 +55,13 @@ def get_parser():
         required=True,
         help="Folder to save the digitized images.",
     )
+    parser.add_argument(
+        "-f",
+        "--fold",
+        type=str,
+        default="all",
+        help="Fold to use for prediction.",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("-f", "--allow_failures", action="store_true")
     return parser
@@ -140,7 +147,7 @@ def filter_lines(lines, degree_window=20, parallelism_count=0, parallelism_windo
     return parallel_lines
 
 
-def predict_mask_nnunet(image, dataset_name, model_folder):
+def predict_mask_nnunet(image, dataset_name, model_folder, fold="all"):
     """Predict the mask using nnUNet."""
 
     # Define temporary folders and paths
@@ -151,10 +158,10 @@ def predict_mask_nnunet(image, dataset_name, model_folder):
     mask_path_temp = os.path.join(temp_folder_output, "00000_temp.png")
 
     # Define run commands
-    command_run = f"nnUNetv2_predict -d {dataset_name} -i {temp_folder_input} -o {temp_folder_output} -f all -tr nnUNetTrainer -c 2d -p nnUNetPlans"
+    command_run = f"nnUNetv2_predict -d {dataset_name} -i {temp_folder_input} -o {temp_folder_output} -f {fold} -tr nnUNetTrainer -c 2d -p nnUNetPlans"
 
     # Set env variabels (nnUNet needs them to be set)
-    os.environ["nnUNet_results"] = os.path.join(model_folder, "nnUNet_results")
+    os.environ["nnUNet_results"] = os.path.join(model_folder)
 
     # Create temp folders:
     shutil.rmtree(temp_folder_input, ignore_errors=True)
@@ -280,7 +287,9 @@ def run(args):
         image_rotated = rotate(image, rot_angle)
 
         # Segment
-        mask_to_use = predict_mask_nnunet(image_rotated, DATASET_NAME, args.model_folder)
+        mask_to_use = predict_mask_nnunet(
+            image_rotated, DATASET_NAME, args.model_folder, fold=args.fold
+        )
 
         # Use mask to cut into single, binary masks
         signal_masks_cropped, signal_positions_cropped, _ = cut_binary(
