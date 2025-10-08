@@ -54,7 +54,7 @@ def get_paper_ecg(input_file,header_file,output_directory, seed, add_dc_pulse,ad
             
     elif(len(full_leads)==12):
         gen_m = 12
-        if full_mode not in full_leads:
+        if full_mode not in full_leads and full_mode != 'None':
             full_mode = full_leads[0]
         else:
             full_mode = full_mode
@@ -290,7 +290,7 @@ def get_paper_ecg(input_file,header_file,output_directory, seed, add_dc_pulse,ad
 
         outfile = os.path.join(output_directory,rec_tail+'.png')
 
-        json_object = json.dumps(json_dict, indent=4)
+        json_object = json.dumps(json_dict, indent=None, separators=(',', ':'))
 
         # Writing to sample.json
         if store_configs:

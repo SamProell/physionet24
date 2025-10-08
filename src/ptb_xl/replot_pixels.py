@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from functools import partial
 
 
@@ -62,7 +62,7 @@ def resample_pixels_in_dir(dir, resample_factor):
                             )
 
                     with open(file_path, "w") as file:
-                        json.dump(data, file, indent=4)
+                        json.dump(data, file, indent=None, separators=(",", ":"))
                 except Exception as e:
                     error_list.append((e, file_path))
     print("Errors:")
@@ -71,7 +71,7 @@ def resample_pixels_in_dir(dir, resample_factor):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Resample plotted pixels in a " "directory."
+        description="Resample plotted pixels in a directory."
     )
 
     parser.add_argument(
@@ -95,7 +95,9 @@ if __name__ == "__main__":
         "--plot", action="store_true", help="Whether to plot the resampled pixels."
     )
     parser.add_argument("--num_workers", type=int, default=1, help="Number of workers.")
-
+    parser.add_argument(
+        "--process_pool", action="store_true", help="Use process pool instead of threads"
+    )
     args = parser.parse_args()
 
     # Increase pixel density
@@ -112,7 +114,8 @@ if __name__ == "__main__":
         resample_pixels_in_dir_partial = partial(
             resample_pixels_in_dir, resample_factor=args.resample_factor
         )
-        with ThreadPoolExecutor(max_workers=args.num_workers) as executor:
+        executor_class = ProcessPoolExecutor if args.process_pool else ThreadPoolExecutor
+        with executor_class(max_workers=args.num_workers) as executor:
             list(
                 tqdm(executor.map(resample_pixels_in_dir_partial, dirs), total=len(dirs))
             )

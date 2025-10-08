@@ -423,7 +423,7 @@ def run(args):
         "file_ending": ".png",
     }
     with open(os.path.join(args.output_folder, "dataset.json"), "w") as f:
-        json.dump(dataset_json_dict, f)
+        json.dump(dataset_json_dict, f, indent=None, separators=(",", ":"))
 
 
 if __name__ == "__main__":
